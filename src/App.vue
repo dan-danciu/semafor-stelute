@@ -22,21 +22,25 @@
     <div class="card" v-if="!running">
       Apasati "Start" in acelasi timp pe doua telefoane diferite, alegand aceeasi durata, pentru a obtine semafoare sincronizate pentru masini si pietoni.
     </div>
+    <div class="">
+      <div ref="fullscreen1" v-show="(fullscreen && showthis == 'fullscreen1') || (ios && showthis == 'fullscreen1')">
+          <SemaforMasini  :style="{height: window.height + 'px'}" :light="light" :yellow="yellow"/>
+      </div>
+
+      <div ref="fullscreen2" v-show="fullscreen && showthis == 'fullscreen2' || (ios && showthis == 'fullscreen2')">
+        <SemaforPietoni :style="{height: window.height + 'px'}" :light="!light"/>
+      </div>
+    </div>
+    <div class="card" :style="{border: '1px solid', height: '50px'}" v-if="ios && showthis != 'none'" @click="showthis='none'">
+      Inchide semafor
+    </div>
     <div  v-show="running" id="toggleEl1" @click="toggleFullscreen('fullscreen1')">
       <img src="./assets/car.png" alt="">
     </div>
     <div v-show="running" id="toggleEl2" @click="toggleFullscreen('fullscreen2')">
       <img src="./assets/kid.png" alt="">
     </div>
-    <div class="" v-show="fullscreen">
-      <div ref="fullscreen1">
-          <SemaforMasini  :style="{height: window.height + 'px'}" :light="light" :yellow="yellow"/>
-      </div>
 
-      <div ref="fullscreen2">
-        <SemaforPietoni :style="{height: window.height + 'px'}" :light="!light"/>
-      </div>
-    </div>
 
 
   </div>
@@ -57,8 +61,13 @@ export default {
       running: false,
       useyellow: true,
       yellowtime: 0,
-      yellow: false
+      yellow: false,
+      ios: false,
+      showthis: 'none'
     }
+  },
+  created() {
+    this.ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   },
   methods: {
     lightUp() {
@@ -76,6 +85,7 @@ export default {
       }, this.time * 1000);
     },
     toggleFullscreen(which) {
+      this.showthis = which;
       let vm = this;
       let elem = this.$refs[which];
       if (elem.requestFullscreen) {
@@ -84,20 +94,22 @@ export default {
         });
         elem.requestFullscreen();
       } else if (elem.mozRequestFullScreen) { /* Firefox */
-          elem.addEventListener("mozfullscreenchange", function() {
-            vm.fullscreen = (document.mozFullscreenElement !== null);
-          });
-          elem.mozRequestFullScreen();
+        elem.addEventListener("mozfullscreenchange", function() {
+          vm.fullscreen = (document.mozFullscreenElement !== null);
+        });
+        elem.mozRequestFullScreen();
       } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-          elem.addEventListener("webkitfullscreenchange", function() {
-            vm.fullscreen = (document.webkitFullscreenElement !== null);
-          });
-          elem.webkitRequestFullscreen();
+        elem.addEventListener("webkitfullscreenchange", function() {
+          vm.fullscreen = (document.webkitFullscreenElement !== null);
+        });
+        elem.webkitRequestFullscreen();
       } else if (elem.msRequestFullscreen) { /* IE/Edge */
-          elem.addEventListener("msfullscreenchange", function() {
-            vm.fullscreen = (document.msFullscreenElement !== null);
-          });
-          elem.msRequestFullscreen();
+        elem.addEventListener("msfullscreenchange", function() {
+          vm.fullscreen = (document.msFullscreenElement !== null);
+        });
+        elem.msRequestFullscreen();
+      } else if (this.ios) {
+        vm.fullscreen = true;
       }
 
 
