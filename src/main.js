@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-Vue.config.productionTip = false
+Vue.config.productionTip = true
 import NoSleep from "nosleep.js/dist/NoSleep.min.js"
 
 Vue.mixin({
